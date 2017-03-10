@@ -60,17 +60,31 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
           Point2f p1 ((*cc).r.center.x, (*cc).r.center.y);
           Point2f p2 ((float)x,(float)y);
           Point2f p_center ( (p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0 );
+#if 1
+          orientation = 0.0;
+          width = abs(p2.x - p1.x);
+          height = abs(p2.y - p1.y);
+#else
           float hyp_2 = (p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y) ;
           width = sqrt( hyp_2 / ( 1.0 + pow((*cc).ratio, 2.0) ) );
           height = width * (*cc).ratio;
           orientation = ( atan2(  p2.y - p1.y, p2.x - p1.x  )  - asin( height / sqrt(hyp_2) ) ) * 180.0 / 3.1415  ; //
+#endif
           (*cc).r = RotatedRect( p_center, Size2f(width,height), orientation );
         } else {
+          orientation = 0.0;
           (*cc).r = RotatedRect( Point2f((float)x,(float)y), Size2f(width,height), orientation  );
+          printf("(x y) (%d %d) center (%f %f)\n", x, y, cc->r.center.x, cc->r.center.y);
           (*cc).init = true;
         }
         displayRR( (*cc) );
    }
+  if  ( event == EVENT_RBUTTONDOWN )
+    {
+      cc->init_rectangles.clear();
+      cc->rectangles.clear();
+      cc->init = false; 
+    }
 }
 
 // display image and rectangles
